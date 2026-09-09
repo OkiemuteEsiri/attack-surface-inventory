@@ -1,0 +1,26 @@
+name: Attack Surface Inventory CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test dependency
+        run: python -m pip install --upgrade pytest
+      - name: Run unit tests
+        run: python -m pytest -q
+      - name: Run synthetic smoke assessment
+        run: python -m src.cli data/synthetic_assets.json --output /tmp/attack-surface-report.md
